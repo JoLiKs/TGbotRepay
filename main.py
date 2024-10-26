@@ -3,8 +3,6 @@ import datetime
 import logging
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.strategy import FSMStrategy
-from driverMinsk.driver import driver_reg
-
 from keys import token
 
 bot = Bot(token=token)
