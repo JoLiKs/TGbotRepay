@@ -10,7 +10,7 @@ from lang import lang, LangFilter
 
 router = Router()
 
-admins = (1573373745,)
+admins = (0,)
 bot: Bot
 
 
@@ -32,14 +32,6 @@ async def start(message: types.Message, state: FSMContext):
 async def join(message: types.Message, state: FSMContext):
     if message.from_user.username is None: return await message.answer(lang['not_tag']['ru'])
     await state.set_state(St.questions)
-
-
-@router.callback_query(F.data.startswith("accept_driver"))
-async def set_task_status(callback: types.CallbackQuery, state: FSMContext):
-    data = await state.get_data()
-    clbk_data = callback.data.split('~')
-
-
 
 
 
@@ -71,7 +63,6 @@ class AIter:  # упрощенный аналог range для async for
         return i
 
 
-
 clients = []
 
 
@@ -94,7 +85,7 @@ async def other_text(message: Message, state: FSMContext):
     f.close()
 
 
-def driver_reg(dp, botik):
+def repay_reg(dp, botik):
     global bot
     bot = botik
     dp.include_router(router)
