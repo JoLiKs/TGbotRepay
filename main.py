@@ -4,6 +4,7 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.strategy import FSMStrategy
 from keys import token
+from repay import repay_reg
 
 bot = Bot(token=token)
 
@@ -22,7 +23,7 @@ async def scheduled(wait_for):
         await asyncio.sleep(wait_for)
         global started
         if not started:
-            driver_reg(dp, bot)
+            repay_reg(dp, bot)
             started = True
         if now.minute == 40 and now.hour == 9 and now.second == 1:
             pass
