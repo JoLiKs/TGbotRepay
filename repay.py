@@ -30,14 +30,14 @@ async def start(message: types.Message, state: FSMContext):
 
 @router.message(F.text, LangFilter('join'))
 async def join(message: types.Message, state: FSMContext):
-    if message.from_user.username is None: return await message.answer(lang['not_tag']['ru'])
+    if message.from_user.username is None: return await message.answer(lang['not_tag']['en'])
     await state.set_state(St.questions)
 
 
 
 @router.message(F.text == "")
 async def busy(message: types.Message, state: FSMContext):
-    if message.from_user.username is None: return await message.answer(lang['not_tag']['ru'])
+    if message.from_user.username is None: return await message.answer(lang['not_tag']['en'])
     data = await state.get_data()
 
 
