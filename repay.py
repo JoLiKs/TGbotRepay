@@ -7,6 +7,7 @@ from aiogram.types import FSInputFile, Message, InputFile
 from states import St
 from keyboards import join_kb
 from lang import lang, LangFilter
+from aiolimiter import AsyncLimiter
 
 router = Router()
 
@@ -14,7 +15,19 @@ admins = (0,)
 bot: Bot
 
 
-@router.message(F.text == "/testo")
+def limited_message(*args):
+    def decorator(handler):
+        @router.message(*args)
+        async def wrapper(message: types.Message, state: FSMContext):
+           # print(f"Получено сообщение: {message.text}")
+            async with limiter:
+                await handler(message, state)
+        return wrapper
+
+    return decorator
+
+
+@limited_message(F.text == "/testo")
 async def testo(message: types.Message, state: FSMContext):
     if message.from_user.id in admins:
         data = await state.get_data()
@@ -22,20 +35,20 @@ async def testo(message: types.Message, state: FSMContext):
 questions = ["surname", "name", "company", "position", "telegram_contact", "email"]
 
 
-@router.message(F.text == "/start")
+@limited_message(F.text == "/start")
 async def start(message: types.Message, state: FSMContext):
     if message.from_user.username is None: return await message.answer(lang['not_tag']['ru'])
     await message.answer(lang['rules']['ru'], reply_markup=join_kb)
 
 
-@router.message(F.text, LangFilter('join'))
+@limited_message(F.text, LangFilter('join'))
 async def join(message: types.Message, state: FSMContext):
     if message.from_user.username is None: return await message.answer(lang['not_tag']['en'])
     await state.set_state(St.questions)
 
 
 
-@router.message(F.text == "")
+@limited_message(F.text == "")
 async def busy(message: types.Message, state: FSMContext):
     if message.from_user.username is None: return await message.answer(lang['not_tag']['en'])
     data = await state.get_data()
@@ -67,16 +80,7 @@ clients = []
 
 
 
-#
-# @router.message(F.text, LangFilter('in_main_menu'))
-# async def back_to_menu(message: Message, state: FSMContext):
-#     print('exit in menu from func!')
-#     data = await state.get_data()
-#     await message.answer('Вы в главном меню', reply_markup=main_menu_kb)
-#     return
-
-
-@router.message(F.text)
+@limited_message(F.text)
 async def other_text(message: Message, state: FSMContext):
     data = await state.get_data()
     f = open('logs.txt', 'a+', encoding='utf-8')
